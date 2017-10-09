@@ -9,8 +9,6 @@ class CardSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    card = serializers.ReadOnlyField(source="card.id")
-
     class Meta:
         model = Review
         fields = ('id', 'review_date', 'answer_quality', 'card')

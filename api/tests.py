@@ -1,10 +1,11 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from django.utils import timezone
 from api.models import Card, Review
 from api.serializers import CardSerializer, ReviewSerializer
+import json
 
 
-class CardTestCase(TestCase):
+class CardModelTestCase(TestCase):
     def setUp(self):
         Card.objects.create(front="default")
         Card.objects.create(front="front1", interval=6)
@@ -111,3 +112,118 @@ class ReviewSerializerTestCase(TestCase):
             "card": card.id
         }
         self.assertEqual(serializer.data, desired_output)
+
+
+class CardViewsTestCase(TestCase):
+    def setUp(self):
+        card1 = Card.objects.create(front="front1", back="back1")
+        card2 = Card.objects.create(front="front2", back="back2")
+
+    def test_getting_all_cards(self):
+        client = Client()
+        response = client.get('/cards/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_getting_card(self):
+        card1 = Card.objects.get(front="front1")
+        client = Client()
+        response = client.get('/cards/' + str(card1.id) + '/')
+        self.assertEqual(response.status_code, 200)
+        response_dict = json.loads((response.content).decode('utf-8'))
+        self.assertEqual(response_dict['front'], "front1")
+
+    def test_deleting_card(self):
+        card2 = Card.objects.get(front="front2")
+        client = Client()
+        response = client.delete('/cards/' + str(card2.id) + '/')
+        self.assertEqual(response.status_code, 204)
+        response = client.get('/cards/' + str(card2.id) + '/')
+        self.assertEqual(response.status_code, 404)
+
+    def test_patching_card(self):
+        card1 = Card.objects.get(front="front1")
+        client = Client()
+        response = client.patch('/cards/' + str(card1.id) + '/',
+                                content_type='application/json',
+                                data='{"front": "new_front"}')
+        self.assertEqual(response.status_code, 200)
+        response_dict = json.loads((response.content).decode('utf-8'))
+        self.assertEqual(response_dict['front'], "new_front")
+
+    def test_creating_card(self):
+        client = Client()
+        card_data = {
+            "front": "front3",
+            "back": "back3"
+        }
+        response = client.post('/cards/', content_type='application/json',
+                                data=json.dumps(card_data))
+        card3 = Card.objects.get(front="front3");
+        response = client.get('/cards/' + str(card3.id) + '/')
+        self.assertEqual(response.status_code, 200)
+        response_dict = json.loads((response.content).decode('utf-8'))
+        self.assertEqual(response_dict['front'], "front3")
+
+class ReviewViewsTestCase(TestCase):
+    def setUp(self):
+        card1 = Card.objects.create(front="front1", back="back1")
+        card2 = Card.objects.create(front="front2", back="back2")
+        card3 = Card.objects.create(front="front3", back="back3")
+        review11 = Review.objects.create(card=card1, answer_quality=2)
+        review12 = Review.objects.create(card=card1, answer_quality=5)
+        review21 = Review.objects.create(card=card2, answer_quality=3)
+
+    def test_getting_all_reviews(self):
+        client = Client()
+        response = client.get('/reviews/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_getting_card(self):
+        card2 = Card.objects.get(front="front2")
+        review21 = Review.objects.get(card=card2)
+        client = Client()
+        response = client.get('/reviews/' + str(review21.id) + '/')
+        self.assertEqual(response.status_code, 200)
+        response_dict = json.loads((response.content).decode('utf-8'))
+        self.assertEqual(response_dict['answer_quality'], 3)
+
+    def test_creating_review(self):
+        card2 = Card.objects.get(front="front2")
+        client = Client()
+        review_data = {
+            "card": card2.id,
+            "answer_quality": 1
+        }
+        response = client.post('/reviews/', content_type='application/json',
+                                data=json.dumps(review_data))
+        self.assertEqual(response.status_code, 200)
+        review22 = Review.objects.get(answer_quality=1)
+        response = client.get('/reviews/' + str(review22.id) + '/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_is_card_reviewed_after_creating_new_review(self):
+        card3 = Card.objects.get(front="front3")
+        client = Client()
+
+        response = client.get('/cards/' + str(card3.id) + '/')
+        self.assertEqual(response.status_code, 200)
+        response_dict = json.loads((response.content).decode('utf-8'))
+        self.assertEqual(response_dict['is_due'], True)
+
+        review_data = {
+            "card": card3.id,
+            "answer_quality": 1
+        }
+        response = client.post('/reviews/', content_type='application/json',
+                                data=json.dumps(review_data))
+        self.assertEqual(response.status_code, 200)
+        review22 = Review.objects.get(answer_quality=1)
+        response = client.get('/reviews/' + str(review22.id) + '/')
+        self.assertEqual(response.status_code, 200)
+
+        response = client.get('/cards/' + str(card3.id) + '/')
+        self.assertEqual(response.status_code, 200)
+        response_dict = json.loads((response.content).decode('utf-8'))
+        self.assertEqual(response_dict['is_due'], False)
+
+

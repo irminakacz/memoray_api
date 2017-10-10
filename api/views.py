@@ -1,5 +1,6 @@
-from api.models import Card, Review
-from api.serializers import CardSerializer, ReviewSerializer
+from django.contrib.auth.models import User
+from api.models import Deck, Card, Review
+from api.serializers import UserSerializer, DeckSerializer, CardSerializer, ReviewSerializer
 
 from rest_framework import viewsets
 from rest_framework import status
@@ -24,3 +25,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CardViewSet(viewsets.ModelViewSet):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
+
+
+class DeckViewSet(viewsets.ModelViewSet):
+    queryset = Deck.objects.all()
+    serializer_class = DeckSerializer
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

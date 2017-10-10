@@ -1,8 +1,16 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 from datetime import timedelta
 
+
+class Deck(models.Model):
+    user = models.ForeignKey(User, related_name="decks", on_delete=models.CASCADE)
+    name = models.CharField(max_length=40)
+
+
 class Card(models.Model):
+    deck = models.ForeignKey(Deck, related_name="cards", on_delete=models.CASCADE)
     front = models.CharField(max_length=200)
     back = models.CharField(max_length=200)
     creation_date = models.DateTimeField(auto_now_add=True)

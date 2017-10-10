@@ -138,7 +138,8 @@ REST_FRAMEWORK = {
 }
 
 CORS_ORIGIN_WHITELIST = (
-    'localhost:3000'
+    'localhost:4200',
+    'memoray.herokuapp.com'
 )
 
 if 'MEMORAY_DEV' in os.environ:

@@ -221,7 +221,6 @@ class UserViewsTestCase(TestCase):
         }
         response = client.post('/users/', content_type='application/json',
                                 data=json.dumps(user_data))
-        print(response)
         user3 = User.objects.get(username="user3");
         response = client.get('/users/' + str(user3.id) + '/')
         self.assertEqual(response.status_code, 200)
@@ -276,7 +275,6 @@ class DeckViewsTestCase(TestCase):
         }
         response = client.post('/decks/', content_type='application/json',
                                 data=json.dumps(deck_data))
-        print(response)
         deck3 = Deck.objects.get(name="deck3");
         response = client.get('/decks/' + str(deck3.id) + '/')
         self.assertEqual(response.status_code, 200)

@@ -16,6 +16,8 @@ class CardSerializer(serializers.ModelSerializer):
 
 
 class DeckSerializer(serializers.ModelSerializer):
+    cards = CardSerializer(many=True)
+
     class Meta:
         model = Deck
         fields = ('id', 'name', 'cards', 'user')

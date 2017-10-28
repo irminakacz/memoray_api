@@ -44,6 +44,17 @@ class DeckViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Deck.objects.filter(user=self.request.user)
 
+    def create(self, request):
+        data = {
+            "user": request.user.id,
+            "name": request.data["name"],
+            "cards": []
+        }
+        serializer = DeckSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()

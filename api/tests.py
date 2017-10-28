@@ -243,9 +243,7 @@ class DeckViewsTestCase(TestCase):
 
     def test_creating_deck(self):
         deck_data = {
-            "user": self.user1.id,
-            "name": "deck3",
-            "cards": []
+            "name": "deck3"
         }
         response = self.client.post('/decks/', content_type='application/json',
                                 data=json.dumps(deck_data))

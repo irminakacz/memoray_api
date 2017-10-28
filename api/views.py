@@ -46,8 +46,6 @@ class DeckViewSet(viewsets.ModelViewSet):
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_queryset(self):
-        return User.objects.filter(pk=self.request.user.pk)
+    permission_classes = (permissions.AllowAny,)

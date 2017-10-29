@@ -60,3 +60,12 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.AllowAny,)
+
+    def create(self, request):
+        new_user = User(
+            username=request.data['username']
+        )
+        new_user.set_password(request.data['password'])
+        new_user.save()
+        return Response(status=status.HTTP_201_CREATED)
+

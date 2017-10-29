@@ -198,7 +198,7 @@ class UserViewsTestCase(TestCase):
     def test_creating_user(self):
         user_data = {
             "username": "user3",
-            "decks": []
+            "password": "password1"
         }
         response = self.client.post('/users/', content_type='application/json',
                                 data=json.dumps(user_data))

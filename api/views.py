@@ -57,9 +57,11 @@ class DeckViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.AllowAny,)
+
+    def get_queryset(self):
+        return User.objects.filter(pk=self.request.user.pk)
 
     def create(self, request):
         new_user = User(
@@ -69,3 +71,9 @@ class UserViewSet(viewsets.ModelViewSet):
         new_user.save()
         return Response(status=status.HTTP_201_CREATED)
 
+    def partial_update(self, request, *args, **kwargs):
+        user = self.get_object()
+        user.username = request.data['username']
+        user.set_password(request.data['password'])
+        user.save()
+        return Response(status=status.HTTP_201_CREATED)

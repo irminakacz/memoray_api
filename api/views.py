@@ -2,6 +2,8 @@ from django.contrib.auth.models import User
 from api.models import Deck, Card, Review
 from api.serializers import UserSerializer, DeckSerializer, CardSerializer, ReviewSerializer
 
+from django.db.utils import IntegrityError
+
 from rest_framework import permissions
 from rest_framework import viewsets
 from rest_framework import status
@@ -64,11 +66,14 @@ class UserViewSet(viewsets.ModelViewSet):
         return User.objects.filter(pk=self.request.user.pk)
 
     def create(self, request):
-        new_user = User(
-            username=request.data['username']
-        )
-        new_user.set_password(request.data['password'])
-        new_user.save()
+        try:
+            new_user = User(
+                username=request.data['username']
+            )
+            new_user.set_password(request.data['password'])
+            new_user.save()
+        except IntegrityError:
+            return Response(status=status.HTTP_409_CONFLICT)
         return Response(status=status.HTTP_201_CREATED)
 
     def partial_update(self, request, *args, **kwargs):

@@ -78,7 +78,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def partial_update(self, request, *args, **kwargs):
         user = self.get_object()
-        user.username = request.data['username']
         user.set_password(request.data['password'])
         user.save()
-        return Response(status=status.HTTP_201_CREATED)
+        return Response(
+            {"id": user.id, "username": user.username},
+            status=status.HTTP_201_CREATED)

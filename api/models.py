@@ -65,4 +65,4 @@ class Review(models.Model):
     answer_quality = models.IntegerField()
 
     class Meta:
-        ordering = ["review_date"]
+        ordering = ["-review_date"]

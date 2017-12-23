@@ -48,11 +48,16 @@ class Card(models.Model):
         return self.reviews.all().count()
 
     def new_easiness_factor(self, answer_quality):
+        MAX_EASINESS_FACTOR = 2.5
+        MIN_EASINESS_FACOTR = 1.1
+
         new_easiness_factor = self.easiness_factor - 0.8 + 0.28 * answer_quality - 0.02 * answer_quality * answer_quality
-        if new_easiness_factor > 2.5:
-            new_easiness_factor = 2.5
-        if new_easiness_factor < 1.1:
-            new_easiness_factor = 1.1
+
+        if new_easiness_factor > MAX_EASINESS_FACTOR:
+            new_easiness_factor = MAX_EASINESS_FACTOR
+        if new_easiness_factor < MIN_EASINESS_FACTOR:
+            new_easiness_factor = MIN_EASINESS_FACTOR
+
         return round(new_easiness_factor, 2)
 
     def new_interval(self, easiness_factor):

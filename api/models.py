@@ -5,12 +5,14 @@ from datetime import timedelta
 
 
 class Deck(models.Model):
-    user = models.ForeignKey(User, related_name="decks", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="decks",
+                             on_delete=models.CASCADE)
     name = models.CharField(max_length=40)
 
 
 class Card(models.Model):
-    deck = models.ForeignKey(Deck, related_name="cards", on_delete=models.CASCADE)
+    deck = models.ForeignKey(Deck, related_name="cards",
+                             on_delete=models.CASCADE)
     front = models.CharField(max_length=200)
     back = models.CharField(max_length=200)
     creation_date = models.DateTimeField(auto_now_add=True)
@@ -49,9 +51,10 @@ class Card(models.Model):
 
     def new_easiness_factor(self, answer_quality):
         MAX_EASINESS_FACTOR = 2.5
-        MIN_EASINESS_FACOTR = 1.1
+        MIN_EASINESS_FACTOR = 1.1
 
-        new_easiness_factor = self.easiness_factor - 0.8 + 0.28 * answer_quality - 0.02 * answer_quality * answer_quality
+        new_easiness_factor = self.easiness_factor - 0.8 + 0.28
+        * answer_quality - 0.02 * answer_quality * answer_quality
 
         if new_easiness_factor > MAX_EASINESS_FACTOR:
             new_easiness_factor = MAX_EASINESS_FACTOR
@@ -65,7 +68,8 @@ class Card(models.Model):
 
 
 class Review(models.Model):
-    card = models.ForeignKey(Card, related_name='reviews', on_delete=models.CASCADE)
+    card = models.ForeignKey(Card, related_name='reviews',
+                             on_delete=models.CASCADE)
     review_date = models.DateTimeField(auto_now_add=True)
     answer_quality = models.IntegerField()
 

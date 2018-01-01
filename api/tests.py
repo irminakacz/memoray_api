@@ -176,24 +176,25 @@ class UserViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_getting_one_user(self):
+        self.client.force_authenticate(user=self.user1)
         response = self.client.get('/users/' + str(self.user1.id) + '/')
         self.assertEqual(response.status_code, 200)
         response_dict = json.loads((response.content).decode('utf-8'))
         self.assertEqual(response_dict['username'], "user1")
 
     def test_deleting_user(self):
+        self.client.force_authenticate(user=self.user2)
         response = self.client.delete('/users/' + str(self.user2.id) + '/')
         self.assertEqual(response.status_code, 204)
         response = self.client.get('/users/' + str(self.user2.id) + '/')
         self.assertEqual(response.status_code, 404)
 
     def test_patching_user(self):
+        self.client.force_authenticate(user=self.user1)
         response = self.client.patch('/users/' + str(self.user1.id) + '/',
                                 content_type='application/json',
-                                data='{"username": "new_username"}')
-        self.assertEqual(response.status_code, 200)
-        response_dict = json.loads((response.content).decode('utf-8'))
-        self.assertEqual(response_dict['username'], "new_username")
+                                data='{"password": "new_password"}')
+        self.assertEqual(response.status_code, 201)
 
     def test_creating_user(self):
         user_data = {
@@ -203,6 +204,7 @@ class UserViewsTestCase(TestCase):
         response = self.client.post('/users/', content_type='application/json',
                                 data=json.dumps(user_data))
         user3 = User.objects.get(username="user3");
+        self.client.force_authenticate(user=user3)
         response = self.client.get('/users/' + str(user3.id) + '/')
         self.assertEqual(response.status_code, 200)
         response_dict = json.loads((response.content).decode('utf-8'))

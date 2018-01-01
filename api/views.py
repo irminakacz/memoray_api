@@ -27,7 +27,8 @@ class ReviewViewSet(viewsets.ModelViewSet):
             card.review(request.data['answer_quality'])
             card.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class CardViewSet(viewsets.ModelViewSet):
@@ -56,7 +57,8 @@ class DeckViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
@@ -67,9 +69,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         try:
-            new_user = User(
-                username=request.data['username']
-            )
+            new_user = User(username=request.data['username'])
             new_user.set_password(request.data['password'])
             new_user.save()
         except IntegrityError:

@@ -53,8 +53,7 @@ class Card(models.Model):
         MAX_EASINESS_FACTOR = 2.5
         MIN_EASINESS_FACTOR = 1.1
 
-        new_easiness_factor = self.easiness_factor - 0.8 + 0.28
-        * answer_quality - 0.02 * answer_quality * answer_quality
+        new_easiness_factor = self.easiness_factor - 0.8 + 0.28 * answer_quality - 0.02 * answer_quality * answer_quality
 
         if new_easiness_factor > MAX_EASINESS_FACTOR:
             new_easiness_factor = MAX_EASINESS_FACTOR

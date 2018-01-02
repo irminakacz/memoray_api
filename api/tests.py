@@ -62,7 +62,7 @@ class CardReviewIntegrationTestCase(TestCase):
         self.assertEqual(self.card.last_review_date(),
                          review2.review_date)
 
-    def test_if_easiness_factor_not_gets_updated_until_third_review(self):
+    def test_if_easiness_factor_not_updated_until_third_review(self):
         review = Review.objects.create(card=self.card, answer_quality=4)
         self.card.review(review.answer_quality)
         review = Review.objects.create(card=self.card, answer_quality=3)
